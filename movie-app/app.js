@@ -11,8 +11,8 @@ app.get("/",(req,res) => {
     res.render("landing");
 });
 
+
 var post,movie;
-var favourites = [];
 app.get("/search", (req,res) => {
      var url2 = "https://api.themoviedb.org/3/discover/movie?api_key=1510cae89a9c50b52ba4e6a2f5db4dbe&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=true&page="
      fetch(url2+'60').then(function (response) {
