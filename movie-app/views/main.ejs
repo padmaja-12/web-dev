@@ -1,0 +1,113 @@
+<%- include('partials/header'); %>
+<div>
+    <h1 class="display-2 p-3 mb-2 bg-dark text-white" >
+        <i class="fa fa-fw fa-lg fa-star-o left"></i>
+        <%= data["title"] %></h1>
+            <img src="https://image.tmdb.org/t/p/w500<%= data["poster_path"] %>" alt="Poster" class="img-thumbnail" style="display: block;margin-left: auto;margin-right: auto;height:400px;width:300px"/>
+</div>
+<h3 class="p-3 mb-2 bg-dark text-white">Details</h3>
+    <div style="margin:10px;display:flex;flex-direction:column;">
+        <div style="display : flex">
+            <h4>Genre:</h4>
+            <% data["genres"].forEach(genre => { %>
+                <div style="width: fit-content;border: 2px solid #aaaaaa;padding: 5px;margin: 2px;">
+                     <%= genre["name"] %>
+                </div>       
+         <%   }); %>
+        </div>
+        <div style="display : flex">
+            <p><h4>Budget:</h4> 
+                <div style="width: fit-content;border: 2px solid #aaaaaa;padding: 5px;margin: 2px;">
+                    <%= data["budget"] %>
+               </div>  
+             </p>
+        </div>
+        <div style="display : flex">
+            <p><h4>Collection:</h4> 
+                <div style="width: fit-content;border: 2px solid #aaaaaa;padding: 5px;margin: 2px;">
+                    <%= data["revenue"] %>
+               </div>  
+             </p>
+        </div>
+        <div style="display : flex">
+            <p><h4>Status:</h4> 
+                <div style="width: fit-content;border: 2px solid #aaaaaa;padding: 5px;margin: 2px;">
+                    <%= data["status"] %>
+               </div>  
+             </p>
+        </div>
+        <div style="display : flex">
+            <p><h4>Release Date:</h4> 
+                <div style="width: fit-content;border: 2px solid #aaaaaa;padding: 5px;margin: 2px;">
+                    <%= data["release_date"] %>
+               </div>  
+             </p>
+        </div>
+        <div style="display : flex">
+            <p><h4>Runtime:</h4> 
+                <div style="width: fit-content;border: 2px solid #aaaaaa;padding: 5px;margin: 2px;">
+                    <%= data["runtime"] %>
+               </div>  
+             </p>
+        </div>
+        <div style="display : flex">
+            <p><h4>Tagline:</h4> 
+                <div style="width: fit-content;border: 2px solid #aaaaaa;padding: 5px;margin: 2px;">
+                    <%= data["tagline"] %>
+               </div>  
+             </p>
+        </div>
+    </div>
+    <h3 class="p-3 mb-2 bg-dark text-white">Overview</h3>
+        <p class="lead" style="margin: 10px 10px">
+            <%= data["overview"] %>
+        </p>
+    <h3 class="p-3 mb-2 bg-dark text-white">Videos</h3>
+        <div class ="row text-center" style="display:flex; flex-wrap: wrap;margin:10px 10px">
+            <% data["videos"]["results"].forEach(video => { %>
+                <div style="width: 300px;border: 2px solid #aaaaaa;padding: 5px;margin: 10px;">
+                    <i class="fa fa-youtube-square fa-3x" aria-hidden="true"></i>
+                    <a href="https://www.youtube.com/watch?v=<%= video["key"] %>"><%= video["name"] %></a> 
+                </div>
+            <% }); %>
+        </div>
+    <h3 class="p-3 mb-2 bg-dark text-white">Production Companies</h3>
+        <div class="row text-center" style="display:flex; flex-wrap: wrap;margin:10px 10px">
+            <% data["production_companies"].forEach(pc => { %>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card">
+                        <img class="img-thumbnail img-fluid" src="https://image.tmdb.org/t/p/w500<%- pc["logo_path"] %>" alt="Poster pic">
+                        <!-- You gotta remove the bottom border -->
+                        <div class="caption">
+                            <h4><%= pc["name"] %></h4>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+        <h3 class="p-3 mb-2 bg-dark text-white">Reviews</h3>   
+        <div>
+            <% data["reviews"]["results"].forEach(review => { %>
+                <div style="width: 1330px;border: 2px solid #aaaaaa;padding: 5px;margin: 10px;">
+                    <blockquote class="blockquote">
+                        <p class="text-justify"><%= review["content"] %></p>
+                        <footer class="blockquote-footer"><cite title="Source Title"><%= review["author"] %></cite></footer>
+                      </blockquote>
+                </div>
+            <% }); %>
+        </div>   
+        <h3 class="p-3 mb-2 bg-dark text-white">Similar Movies</h3>
+        <div class="row text-center" style="display:flex; flex-wrap: wrap;margin:10px 10px">
+            <% d["results"].forEach(newm => { %>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card">
+                        <img class="img-thumbnail img-fluid" src="https://image.tmdb.org/t/p/w500<%- newm["poster_path"] %>" alt="Poster pic">
+                        <!-- You gotta remove the bottom border -->
+                        <div class="caption">
+                            <h4><a href="/main?id=<%= newm["id"] %>" id="a"><%= newm["title"] %></a></h4>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+<%- include('partials/footer'); %>
