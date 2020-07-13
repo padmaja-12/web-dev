@@ -1,8 +1,8 @@
 <%- include('partials/header'); %>
-<div style=" width: 400px;padding: 10px;margin: 10px 10px">
-    <h1 style="font-weight: 100;">Search </h1>
+<div style="padding: 5px;">
+    <h2 class="p-4 mb-2 bg-dark text-white" style="font-weight: 100;">Search Your Favourite Movies</h1>
 
-    <form action="/result" method="GET">
+    <form action="/search/result" method="GET">
         <input type="text" placeholder="search term" name="search">
         <input type="submit" class="btn btn-sm btn-dark">
     </form>
@@ -16,7 +16,7 @@
                     <img class="img-thumbnail img-fluid" src="https://image.tmdb.org/t/p/w500<%- movie["poster_path"] %>" alt="Poster pic">
                     <!-- You gotta remove the bottom border -->
                     <div class="caption">
-                        <h4><a href="/main?id=<%= movie["id"] %>" id="a"><%= movie["title"] %></a></h4>
+                        <h4><a href="/search/main?id=<%= movie["id"] %>" id="a"><%= movie["title"] %></a></h4>
                     </div>
                 </div>
             </div>
@@ -24,7 +24,7 @@
     </div>
 </div>
 <div>
-    <div class="p-4 mb-2 bg-dark text-white"><h3>HERE ARE SOME OF THE RECENT MOVIES</h3></div>
+    <div class="p-4 mb-2 bg-dark text-white"><h3>HERE ARE SOME OF THE TOP RATED MOVIES</h3></div>
     <div class="row text-center" style="display:flex; flex-wrap: wrap;">
         <% d["results"].forEach(movie => { %>
             <div class="col-md-2 col-sm-6">
@@ -32,7 +32,7 @@
                     <img class="img-thumbnail img-fluid" src="https://image.tmdb.org/t/p/w500<%- movie["poster_path"] %>" alt="Poster pic">
                     <!-- You gotta remove the bottom border -->
                     <div class="caption">
-                        <h4><a href="/main?id=<%= movie["id"] %>" id="a"><%= movie["title"] %></a></h4>
+                        <h4><a href="/search/main?id=<%= movie["id"] %>" id="a"><%= movie["title"] %></a></h4>
                     </div>
                 </div>
             </div>

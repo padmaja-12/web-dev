@@ -1,11 +1,34 @@
-var express = require("express");
-var app = express();
-var request = require("request");
-const fetch = require("node-fetch");
+var express = require("express"),
+    app = express(),
+    request = require("request"),
+    fetch = require("node-fetch"),
+    mongoose = require("mongoose"),
+    passport = require("passport"),
+    bodyParser = require("body-parser"),
+    User = require("./model/user"),
+    LocalStrategy = require("passport-local"),
+    passportLocalMongoose = require("passport-local-mongoose")
+mongoose.connect("mongodb://localhost/movie_app");
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(require("express-session")({
+    secret:"I love my mummy",
+    resave : false,
+    saveUninitialized : false
+}));
 
 app.set("view engine","ejs");
+app.use(express.static(__dirname + "/public"));
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
+app.use((req,res,next) => {
+    res.locals.currentUser = req.user;
+    next();
+})
 
 app.get("/",(req,res) => {
     res.render("landing");
@@ -13,9 +36,10 @@ app.get("/",(req,res) => {
 
 
 var post,movie;
-app.get("/search", (req,res) => {
-     var url2 = "https://api.themoviedb.org/3/discover/movie?api_key=1510cae89a9c50b52ba4e6a2f5db4dbe&language=en-US&sort_by=release_date.desc&include_adult=false&include_video=true&page="
-     fetch(url2+'60').then(function (response) {
+app.get("/search",isLoggedIn, (req,res) => {
+     var url2 = "https://api.themoviedb.org/3/movie/upcoming?api_key=1510cae89a9c50b52ba4e6a2f5db4dbe&language=en-US&page=1";
+     var ur = "https://api.themoviedb.org/3/movie/top_rated?api_key=1510cae89a9c50b52ba4e6a2f5db4dbe&language=en-US&page=1";
+     fetch(url2).then(function (response) {
 	if (response.ok) {
 		return response.json();
 	} else {
@@ -27,7 +51,7 @@ app.get("/search", (req,res) => {
     post=data;
 
 	// Fetch another API
-	return fetch(url2+"125");
+	return fetch(ur);
 
 }).then(function (response) {
 	if (response.ok) {
@@ -36,12 +60,13 @@ app.get("/search", (req,res) => {
 		return Promise.reject(response);
 	}
 }).then(function (userData) {
-	res.render("search",{data:post, d:userData});
+    res.render("search",{data:post, d:userData,currentUser:req.user});
+    //console.log(req.user);
 }).catch(function (error) {
 	console.log(error);
 });
 })
-app.get("/result",(req,res)=>{
+app.get("/search/result",(req,res)=>{
     var query = req.query.search
     var url = "https://api.themoviedb.org/3/search/movie?api_key=1510cae89a9c50b52ba4e6a2f5db4dbe&query="+query
       request(url,(error,response,body)=>{
@@ -51,7 +76,7 @@ app.get("/result",(req,res)=>{
           }
       })
 });
-app.get("/main",(req,res)=>{
+app.get("/search/main",(req,res)=>{
     var id = req.query.id
     var url1 = "https://api.themoviedb.org/3/movie/"+ id + "?api_key=1510cae89a9c50b52ba4e6a2f5db4dbe&append_to_response=videos,images,reviews"
     var u = "https://api.themoviedb.org/3/movie/" + id + "/similar?api_key=1510cae89a9c50b52ba4e6a2f5db4dbe"
@@ -65,7 +90,7 @@ app.get("/main",(req,res)=>{
     
         // Store the post data to a variable
         movie=data;
-    
+        
         // Fetch another API
         return fetch(u);
     
@@ -81,6 +106,42 @@ app.get("/main",(req,res)=>{
         console.log(error);
     });
 });
+
+app.get("/register",(req,res) => {
+     res.render("register");
+});
+
+app.post("/register",(req,res)=> {
+    var newUser = new User({username : req.body.username});
+    User.register(newUser,req.body.password, (err,user) => {
+        if(err){
+            console.log(err);
+            return res.render("register");
+        }
+        passport.authenticate("local")(req,res, () => {
+            res.redirect("/search");
+        });
+    });
+});
+app.get("/login",(req,res) => {
+    res.render("login");
+});
+
+app.post("/login",passport.authenticate("local",{
+    successRedirect : "/search",
+    failureRedirect : "/login"
+}),(req,res) => {});
+
+app.get("/logout",(req,res) => {
+    req.logout();
+    res.redirect("/");
+});
+function isLoggedIn(req,res,next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+    res.redirect("/login");
+}
 app.listen(3000, function(){
     console.log("MovieApp sever is up....PORT: 3000");
 });
