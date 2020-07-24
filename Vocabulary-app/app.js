@@ -302,9 +302,6 @@ app.get("/logout",(req,res) => {
       });
 })
 
-app.get("/about",(req,res) => {
-    res.render("about");
-})
 
 
 app.listen(8000,() => {
