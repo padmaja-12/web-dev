@@ -8,7 +8,8 @@ var express         = require("express"),
     bodyParser      = require("body-parser"),
     axios           = require("axios"),
     firebase        = require("firebase/app"),
-    flash           = require("connect-flash")
+    flash           = require("connect-flash");
+const { app } = require("firebase/app");
     methodOverride  = require("method-override"),
     app             = express();
 
@@ -81,7 +82,7 @@ app.get("/:id/home/add", (req,res) => {
     let id = req.params.id;
     axios.get('https://vocabulary-app-d1420.firebaseio.com/'+ id + '/word/'+ set + '.json')
     .then(response => {
-        console.log(response.data);
+       // console.log(response.data);
         let word = [];
         for (let key in response.data) {
             word.push(response.data[key]);
@@ -166,12 +167,12 @@ app.get("/:id/home/learning",(req,res) => {
 }
     axios.get('https://vocabulary-app-d1420.firebaseio.com/'+ id + '/learning.json')
     .then(response => {
-        console.log(response.data);
+        //console.log(response.data);
         let word = [];
         for (let key in response.data) {
             word.push({w:response.data[key],index : key});
         }
-        console.log(response.data,id);
+       // console.log(response.data,id);
         res.render("learning", {words : word,id : id});
     })
     .catch(error => {
@@ -206,7 +207,7 @@ app.get("/:id/home/review",(req,res) => {
     axios.get('https://vocabulary-app-d1420.firebaseio.com/'+ id + '/reviewed.json')
     .then(response => {
         let word = [];
-        console.log(response.data);
+        //console.log(response.data);
         for (let key in response.data) {
             word.push({w:response.data[key],index : key});
         }
@@ -253,6 +254,7 @@ app.post("/login",(req,res) => {
     firebase.auth().signInWithEmailAndPassword(email, password)
     .then(response => {
         var id = response.user.uid;
+        req.flash("safe","Hi! You have logged in again!!")
        // console.log(response);
         res.redirect("/"+id+"/home");
     })
@@ -278,6 +280,7 @@ app.post("/signup", (req,res) => {
     .then(response => {
        //console.log(response);
        var id = response.user.uid;
+       req.flash("safe","Congratulations!!You have created your account successfully!!")
         res.redirect("/"+id+"/home");
     })
     .catch((error) => {
@@ -298,6 +301,11 @@ app.get("/logout",(req,res) => {
         console.log(error);
       });
 })
+
+app.get("/about",(req,res) => {
+    res.render("about");
+})
+
 
 app.listen(8000,() => {
     console.log("Vocabulary-app is up and running on PORT : 8000");
