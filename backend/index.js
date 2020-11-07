@@ -3,11 +3,23 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const passport = require("passport");
+const localStrategy = require("passport-local");
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
 const PORT = 4000;
 app.use(cors());
 app.use(bodyParser.json());
+app.use(require("express-session")({
+    secret: "Once again Rusty wins cutest dog!",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 mongoose.connect('mongodb://127.0.0.1:27017/Events', { useNewUrlParser: true });
 const connection = mongoose.connection;
 connection.once('open', function() {
