@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 let Events = new Schema({
-    description: {
+    guestNo: {
         type: String
     },
     name: {
@@ -16,5 +16,8 @@ let Events = new Schema({
     endTime: {
         type: String
     },
+    completed : {
+        type : Boolean
+    }
 });
 module.exports = mongoose.model('Events', Events);
