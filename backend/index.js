@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const passport = require("passport");
 const localStrategy = require("passport-local");
 const methodOverride = require('method-override');
+const User = require("./model/user");
 app.use(methodOverride('_method'));
 const PORT = 4000;
 app.use(cors());
@@ -64,7 +65,41 @@ app.put('/update/:id',(req,res) => {
             res.send({events});
         }
     });
-})
+});
+app.post("/signup", function(req, res){
+    User.register(new User({username: req.body.username}), req.body.password, function(err, user){
+        if(err){
+            return res.send({
+                status : "404",
+                message : err
+            });
+        }
+        passport.authenticate("local")(req, res, function(){
+             return res.send({
+                status : "200",
+                data : user
+             });
+        });
+    });
+});
+
+app.post("/login", passport.authenticate("local", 
+), function(req, res){
+    //console.log(req.body.username)
+    User.findOne({username : req.body.username} ,function(err, item) {
+        if(err){
+            return res.send({
+                status : "404",
+                message : err
+            });
+        }
+        res.send({
+            status : "200",
+            data : item
+        });
+    }) 
+});
+
 app.listen(PORT, function() {
     console.log("Server is running on Port: " + PORT);
 });
